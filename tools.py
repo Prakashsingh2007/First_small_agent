@@ -5,7 +5,7 @@ def add(a, b):
 def subtract(a,b):
     return a-b
 
-def multiple(a,b):
+def multiply(a,b):
     if(a == 0 or b == 0):
         return 0
     else:
@@ -20,7 +20,7 @@ def divide(a,b):
 TOOLS ={
     "add": add,
     "subtract" : subtract,
-    "multiple" : multiple,
+    "multiply" : multiply,
     "divide" : divide,
 }
 
@@ -36,8 +36,8 @@ TOOL_DESCRIPTIONS = [
             "parameters": {"a": "number", "b": "number"},
         },
     {
-            "name": "multiple",
-            "description": "multiple two numbers and return the result.",
+            "name": "multiply",
+            "description": "multiply two numbers and return the result.",
             "parameters": {"a": "number", "b": "number"},
         },    
     {
@@ -46,14 +46,3 @@ TOOL_DESCRIPTIONS = [
             "parameters": {"a": "number", "b": "number"},
         },
 ]
-
-if __name__ == "__main__":
-    print(TOOLS["add"](20, 30))
-    print(TOOLS["subtract"](50,20))
-    print(TOOLS["multiple"](50,0))
-    print(TOOLS["divide"](50,20))
-
-try:
-    TOOLS["divide"](1, 0)
-except ValueError as e:
-    print("caught:", e)
