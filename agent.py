@@ -13,7 +13,7 @@ def run_agent(user_input):
             return action["content"]
 
         elif action["type"] == "tool":
-            tool_name = action["tool"]
+            tool_name = action["name"]
             arguments = action["arguments"]
 
             if tool_name not in TOOLS:
