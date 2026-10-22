@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-
+from brains.nlp import normalize
 import joblib
 
 MODEL_PATH = Path(__file__).with_name("intent_model.joblib")
@@ -31,7 +31,7 @@ def decide(messages):
     if last["role"] != "user":
         return {"type": "final", "content": str(last["result"])}
 
-    text = last["content"]
+    text = normalize(last["content"])          # <-- the changed line
     nums = extract_numbers(text)
     if len(nums) != 2:
         raise ValueError(f"expected exactly 2 numbers, found {nums}")
