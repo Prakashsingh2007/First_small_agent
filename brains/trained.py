@@ -1,7 +1,9 @@
 import re
 from pathlib import Path
-from brains.nlp import normalize
+
 import joblib
+
+from brains.nlp import normalize
 
 MODEL_PATH = Path(__file__).with_name("intent_model.joblib")
 NUMBER = re.compile(r"-?\d+(?:\.\d+)?")
@@ -24,6 +26,30 @@ def extract_numbers(text):
     return [float(t) if "." in t else int(t) for t in NUMBER.findall(text)]
 
 
+def classify(text):
+    """Return (intent, confidence) for already-normalized text."""
+    model = get_model()
+    probs = model.predict_proba([prep(text)])[0]
+    best = probs.argmax()
+    return str(model.classes_[best]), float(probs[best])
+
+
+def interpret(raw_text):
+    """Turn a sentence into (tool_call, confidence). Raises ValueError if it can't."""
+    text = normalize(raw_text)
+    nums = extract_numbers(text)
+    if len(nums) != 2:
+        raise ValueError(f"expected exactly 2 numbers, found {nums}")
+
+    name, confidence = classify(text)
+    a, b = nums
+    # "subtract 15 from 40" means 40 - 15, so the order flips
+    if name == "subtract" and "from" in text:
+        a, b = b, a
+
+    return {"type": "tool", "name": name, "arguments": {"a": a, "b": b}}, confidence
+
+
 def decide(messages):
     last = messages[-1]
 
@@ -31,15 +57,5 @@ def decide(messages):
     if last["role"] != "user":
         return {"type": "final", "content": str(last["result"])}
 
-    text = normalize(last["content"])          # <-- the changed line
-    nums = extract_numbers(text)
-    if len(nums) != 2:
-        raise ValueError(f"expected exactly 2 numbers, found {nums}")
-
-    name = str(get_model().predict([prep(text)])[0])
-    a, b = nums
-    # "subtract 15 from 40" means 40 - 15, so the order flips
-    if name == "subtract" and "from" in text.lower():
-        a, b = b, a
-
-    return {"type": "tool", "name": name, "arguments": {"a": a, "b": b}}
+    action, _ = interpret(last["content"])
+    return action

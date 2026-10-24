@@ -1,5 +1,5 @@
 from tools import TOOLS
-from brains.trained import decide
+from brains.hybrid import decide
 
 
 def run_agent(user_input):
@@ -34,4 +34,4 @@ def run_agent(user_input):
 
 
 if __name__ == "__main__":
-    print("Final result:", run_agent("What is 7 *6?"))
+    print("Final result:", run_agent("show me 3 pictures of 5 dogs"))
