@@ -1,7 +1,10 @@
+from brains.common import finish_action
+
+
 def decide(messages):
     last = messages[-1]
 
     if last["role"] == "user":
-        return {"type": "tool", "name": "multiply", "arguments": {"a": 4, "b": 5}}
+        return {"type": "tool", "name": "add", "arguments": {"a": 1, "b": 2}}
 
-    return {"type": "final", "content": str(last["result"])}
+    return finish_action(last)

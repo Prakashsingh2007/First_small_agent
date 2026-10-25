@@ -4,6 +4,8 @@ from pathlib import Path
 import joblib
 
 from brains.nlp import normalize
+from brains.common import finish_action
+from errors import BrainUnavailable
 
 MODEL_PATH = Path(__file__).with_name("intent_model.joblib")
 NUMBER = re.compile(r"-?\d+(?:\.\d+)?")
@@ -18,7 +20,12 @@ def prep(text):
 def get_model():
     global _model
     if _model is None:
-        _model = joblib.load(MODEL_PATH)
+        try:
+            _model = joblib.load(MODEL_PATH)
+        except FileNotFoundError:
+            raise BrainUnavailable(
+                "the trained model file is missing. Run `python train.py` first."
+            ) from None
     return _model
 
 
@@ -42,6 +49,8 @@ def interpret(raw_text):
         raise ValueError(f"expected exactly 2 numbers, found {nums}")
 
     name, confidence = classify(text)
+    if name == "none":
+        raise ValueError("not a calculation")
     a, b = nums
     # "subtract 15 from 40" means 40 - 15, so the order flips
     if name == "subtract" and "from" in text:
@@ -55,7 +64,7 @@ def decide(messages):
 
     # a tool result is the last message, so the task is finished
     if last["role"] != "user":
-        return {"type": "final", "content": str(last["result"])}
+        return finish_action(last)
 
     action, _ = interpret(last["content"])
     return action

@@ -28,6 +28,12 @@ TEMPLATES = {
         "{a} / {b}", "what is {a} / {b}", "calculate {a} divided by {b}",
         "quotient of {a} and {b}", "divide {a} with {b}",
     ],
+    "none": [
+        "show me {a} pictures of {b} dogs", "call me at {a} or {b}",
+        "i have {a} brothers and {b} sisters", "remind me in {a} hours about {b} meetings",
+        "play song number {a} and {b}", "i need {a} tickets for {b} people",
+        "open tab {a} and tab {b}", "my room number is {a} on floor {b}",
+    ],
 }
 
 X, y = [], []
@@ -38,7 +44,7 @@ for label, templates in TEMPLATES.items():
 
 model = make_pipeline(
     TfidfVectorizer(token_pattern=r"[a-z]+|[+\-*/]", ngram_range=(1, 2)),
-    LogisticRegression(max_iter=1000),
+    LogisticRegression(max_iter=1000, C=20),
 )
 model.fit(X, y)
 joblib.dump(model, MODEL_PATH)
