@@ -26,6 +26,7 @@ assert raises(parse_reply, '{"type":"tool","name":"add","arguments":{"a":1}}')  
 assert raises(parse_reply, '{"type":"tool","name":"add","arguments":{"a":1,"b":2,"c":3}}')  # extra argument
 assert raises(parse_reply, '{"type":"tool","name":"add","arguments":"1,2"}')    # arguments not an object
 assert raises(parse_reply, '{"type":"final"}')                                  # no content
-assert raises(parse_reply, '{"type":"think"}')                                  # unknown type
+assert raises(parse_reply, '{"type":"think"}')              
+assert raises(parse_reply, '{"type":"tool","name":"add","arguments":{"a":"result","b":4}}')
 
 print("All brain tests passed")

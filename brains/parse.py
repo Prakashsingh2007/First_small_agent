@@ -37,6 +37,11 @@ def parse_reply(text):
             raise BadReply(
                 f"{name} needs exactly these arguments {sorted(PARAMS[name])}, got {sorted(args)}"
             )
+        for key, value in args.items():
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise BadReply(
+                    f"argument {key} must be a number, got {value!r}; "
+                    "use the actual number from the tool result"
+                )
         return {"type": "tool", "name": name, "arguments": args}
-
     raise BadReply('"type" must be "tool" or "final"')

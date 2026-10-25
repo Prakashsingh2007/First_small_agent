@@ -20,6 +20,7 @@ def run_agent(user_input):
                 raise ValueError(f"Tool {tool_name} not found.")
 
             result = TOOLS[tool_name](**arguments)
+            print(f"  step: {tool_name}({arguments}) = {result}")
 
             messages.append({
                 "role": "tool",
